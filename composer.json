@@ -1,9 +1,11 @@
 {
   "name": "root/workshop",
+  "description": "Demo ci",
+  "license": "proprietary",
   "type": "project",
   "require-dev": {
     "phpunit/phpunit": "^7.5",
-    "jakub-onderka/php-parallel-link": "*"
+    "jakub-onderka/php-parallel-lint": "*"
   },
   "require": {
     "php": ">=7.1"

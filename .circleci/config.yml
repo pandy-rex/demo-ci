@@ -8,6 +8,7 @@ jobs:
       - checkout
       - run: mkdir ~/outputs
       - run: echo 'Some output' > ~/outputs/message.log
+      - run: composer validate composer.json
       - restore_cache:
           keys:
             - v2-php-vendor-{{ checksum "composer.lock" }}
