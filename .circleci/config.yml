@@ -24,6 +24,9 @@ jobs:
           path: ~/reports
       - store-artifacts:
           path: ~/outputs
+
+
+
   security-check:
     docker:
       - image: circleci/php:7.1-apache-stretch-browsers
@@ -45,6 +48,7 @@ workflows:
   commit:
     jobs:
       - build
+      - security-check
 
   security-check:
     triggers:
