@@ -1,0 +1,14 @@
+{
+  "name": "root/workshop",
+  "require": {
+    "php": ">=7.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Workshop\\": "src/"
+    }
+  }
+}
