@@ -8,7 +8,7 @@ jobs:
       - checkout
       - run: mkdir ~/outputs
       - run: echo 'Some output' > ~/outputs/message.log
-      - run: composer validate composer.json
+#      - run: composer validate composer.json
       - restore_cache:
           keys:
             - v2-php-vendor-{{ checksum "composer.lock" }}
@@ -24,3 +24,34 @@ jobs:
           path: ~/reports
       - store-artifacts:
           path: ~/outputs
+  security-check:
+    docker:
+      - image: circleci/php:7.1-apache-stretch-browsers
+
+    steps:
+      - restore_cache:
+          keys:
+            - v2-php-vendor-{{ checksum "composer.lock" }}
+            - v2-php-vendor-
+      - run: composer install
+      - save_cache:
+          key: v2-php-vendor-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
+      - run: vendor/bin/security-checker security:check
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
+
+  security-check:
+    triggers:
+      - schedule:
+          cron: "30 12 * * *"
+          filters:
+            branches:
+              only: master
+    jobs:
+      - security-check
