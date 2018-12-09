@@ -32,7 +32,8 @@ jobs:
       - image: circleci/php:7.1-apache-stretch-browsers
 
     steps:
-      - restore_cache:
+        - checkout
+        - restore_cache:
           keys:
             - v3-php-vendor-{{ checksum "composer.lock" }}
             - v3php-vendor-
