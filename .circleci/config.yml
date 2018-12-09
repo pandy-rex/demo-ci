@@ -34,11 +34,11 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - v2-php-vendor-{{ checksum "composer.lock" }}
-            - v2-php-vendor-
+            - v3-php-vendor-{{ checksum "composer.lock" }}
+            - v3php-vendor-
       - run: composer install
       - save_cache:
-          key: v2-php-vendor-{{ checksum "composer.lock" }}
+          key: v3-php-vendor-{{ checksum "composer.lock" }}
           paths:
             - vendor
       - run: vendor/bin/security-checker security:check
