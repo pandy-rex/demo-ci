@@ -12,6 +12,6 @@ class Dummy
 {
     public function isHappy(): bool
     {
-        return true;
+        return false;
     }
 }
