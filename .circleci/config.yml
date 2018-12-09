@@ -26,24 +26,6 @@ jobs:
           path: ~/outputs
 
 
-
-  css-generate:
-    docker:
-      - image: circleci/node:9
-
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-npm-modules-{{ checksum "package.json" }}
-            - v1-npm-modules-
-      - run: composer install
-      - save_cache:
-          key: v1-npm-modules-{{ checksum "package.json" }}
-          paths:
-            - node_modules
-
-
   security-check:
     docker:
       - image: circleci/php:7.1-apache-stretch-browsers
@@ -60,6 +42,26 @@ jobs:
           paths:
             - vendor
       - run: vendor/bin/security-checker security:check
+
+
+
+  css-generate:
+    docker:
+      - image: circleci/node:9
+
+    steps:
+        - checkout
+        - restore_cache:
+            keys:
+              - v1-npm-modules-{{ checksum "package.json" }}
+              - v1-npm-modules-
+        - run: composer install
+        - save_cache:
+            key: v1-npm-modules-{{ checksum "package.json" }}
+            paths:
+              - node_modules
+
+
 
 workflows:
   version: 2
