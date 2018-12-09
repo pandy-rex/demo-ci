@@ -6,9 +6,27 @@ jobs:
 
     steps:
       - checkout
-      - run: mkdir ~/outputs
-      - run: echo 'Some output' > ~/outputs/message.log
-#      - run: composer validate composer.json
+
+      - restore_cache:
+          keys:
+            - v4-php-vendor-{{ checksum "composer.lock" }}
+            - v4-php-vendor-
+      - run: composer install
+      - save_cache:
+          key: v4-php-vendor-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
+      - run: vendor/bin/phpunit
+      - run: composer validate --strict
+      - run: vendor/bin/parallel-lint src tests
+
+  security-check:
+    docker:
+      - image: circleci/php:7.1-apache-stretch-browsers
+
+    steps:
+      - checkout
+
       - restore_cache:
           keys:
             - v2-php-vendor-{{ checksum "composer.lock" }}
@@ -18,49 +36,26 @@ jobs:
           key: v2-php-vendor-{{ checksum "composer.lock" }}
           paths:
             - vendor
-      - run: mkdir ~/reports
-      - run: vendor/bin/phpunit --log-junit ~/reports/phpunit.xml
-      - store-test-results:
-          path: ~/reports
-      - store-artifacts:
-          path: ~/outputs
 
-
-  security-check:
-    docker:
-      - image: circleci/php:7.1-apache-stretch-browsers
-
-    steps:
-        - checkout
-        - restore_cache:
-          keys:
-            - v3-php-vendor-{{ checksum "composer.lock" }}
-            - v3php-vendor-
-      - run: composer install
-      - save_cache:
-          key: v3-php-vendor-{{ checksum "composer.lock" }}
-          paths:
-            - vendor
       - run: vendor/bin/security-checker security:check
 
-
-
-  css-generate:
+  build-npm:
     docker:
       - image: circleci/node:9
 
     steps:
-        - checkout
-        - restore_cache:
-            keys:
-              - v1-npm-modules-{{ checksum "package.json" }}
-              - v1-npm-modules-
-        - run: composer install
-        - save_cache:
-            key: v1-npm-modules-{{ checksum "package.json" }}
-            paths:
-              - node_modules
+      - checkout
 
+      - restore_cache:
+          keys:
+            - v3-node-vendor-{{ checksum "package-lock.json" }}
+            - v3-node-vendor-
+      - run: npm install
+      - save_cache:
+          key: v3-node-vendor-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - run: npm run scss
 
 
 workflows:
@@ -68,8 +63,9 @@ workflows:
   commit:
     jobs:
       - build
+      - build-npm
       - security-check
-      - css-generate
+
 
   security-check:
     triggers:
